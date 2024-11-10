@@ -1,6 +1,6 @@
 
 ###> symfony/framework-bundle ###
-/.env.local
+# /.env.local
 /.env.local.php
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
@@ -10,7 +10,7 @@
 ###< symfony/framework-bundle ###
 
 ###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
+# /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
 ###> symfony/asset-mapper ###
