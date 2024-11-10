@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: ./docker/php
+    container_name: php-container
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html/test-task
+
+  nginx:
+    build:
+      context: ./docker/nginx
+    container_name: nginx-container
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - php
+
+  mysql:
+    build:
+      context: ./docker/mysql
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  mysql-data:

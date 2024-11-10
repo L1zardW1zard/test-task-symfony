@@ -1,0 +1,91 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <div class="min-h-dvh dark:bg-slate-900 isolate bg-white px-6 py-24 sm:py-32 lg:px-8 justify-items-center content-center">
+        <div class="mx-auto max-w-7xl relative grid-cols-2 gap-4 grid">
+            <div class="blur-3xl dark:bg-slate-800 absolute left[0] top-0 w-full -z-10 aspect-[1155/300] max-w-none bg-gradient-to-tr from-[#565472] to-[#9089fc] opacity-30 " ></div>
+
+            <div>
+                <form id="admin-token-form" data-form-type="admin" action="/api/login_check" method="POST">
+                    <div>
+                        <button type="submit" class="flex justify-center content-center block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>                            
+                            <span>Create admin token</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="login" value="admin">
+                    <input type="hidden" name="pass" value="root">
+                </form>
+                <div class="dark grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <div class="mt-2.5">
+                            <textarea data-token-type="admin" name="about" rows="3" class="p-4 resize-none min-h-56 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="user-token-wrapper">
+                <form id="user-token-form" data-form-type="user" action="/api/login_check" method="POST">
+                    <div>
+                        <button type="submit" class="flex justify-center content-center block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Create user token</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="login" value="user">
+                    <input type="hidden" name="pass" value="userroot">
+                </form>
+                <div class="dark grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <div class="mt-2.5">
+                            <textarea data-token-type="user" name="about" rows="3" class="p-4 resize-none min-h-56 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            (()=>{
+                const adminForm = document.querySelector('#admin-token-form')
+                const userForm = document.querySelector('#user-token-form')
+
+                const forms = document.querySelectorAll('form')
+
+                forms.forEach((form) => {
+                    form.querySelector('button[type="submit"]').addEventListener('click', (e) => {
+                        e.preventDefault()
+                        formSubmit(form)
+                    })
+                })
+
+                const formSubmit = (form) => {
+                    const formData = new FormData(form);
+                    const payload = Object.fromEntries(formData.entries());
+                    form.classList.add('loading')
+                    fetch(form.action, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    }).then(res => res.json()).then(data => {
+                        if (data?.token) {
+                            const textarea = document.querySelector(`[data-token-type="${form.dataset.formType}"]`)
+                            textarea.value = data.token
+                        }
+                        return data
+                    }).finally(()=> {
+                        form.classList.remove('loading')
+                    })
+                }
+            })()
+
+        </script>
+    </div>
+{% endblock %}
